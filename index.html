@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analyse Grammaticale en Temps Réel</title>
+  <style>
+    body {
+      background: #111;
+      color: #eee;
+      font-family: sans-serif;
+      padding: 20px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin-top: 10px;
+      width: 80%;
+    }
+    #log {
+      margin-top: 20px;
+      white-space: pre-wrap;
+      background: #222;
+      padding: 15px;
+      border-radius: 8px;
+    }
+    .category {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      color: #fff;
+    }
+    .category img {
+      width: 30px;
+      height: 30px;
+      margin-right: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h1>Analyseur Grammatical en Temps Réel</h1>
+  <input id="userInput" type="text" placeholder="Écris une phrase..." />
+  <div id="log"></div>
+
+  <!-- Inclusion de la bibliothèque Compromise -->
+  <script src="https://cdn.jsdelivr.net/npm/compromise@13.0.0/builds/compromise.min.js"></script>
+
+  <script>
+    // Fonction pour analyser et afficher les résultats en temps réel
+    function process() {
+      const input = document.getElementById("userInput").value.trim();
+      const log = document.getElementById("log");
+      if (!input) return;
+
+      // Utilisation de compromise pour analyser la phrase
+      const doc = nlp(input);
+
+      // Extraction des entités grammaticales
+      const noms = doc.nouns().out('array');
+      const verbes = doc.verbs().out('array');
+      const adjectifs = doc.adjectives().out('array');
+      const déterminants = doc.determiners().out('array');
+      const pronoms = doc.pronouns().out('array');
+
+      // Créer une fonction pour générer les catégories avec des icônes
+      const createCategory = (title, items, iconUrl) => {
+        if (items.length > 0) {
+          return `
+            <div class="category">
+              <img src="${iconUrl}" alt="${title}" />
+              <strong>${title} :</strong> ${items.join(', ')}
+            </div>
+          `;
+        }
+        return '';
+      };
+
+      // Ajouter les résultats avec des icônes
+      const analyse = `
+${createCategory('Noms', noms, 'https://img.icons8.com/ios/50/000000/person-male.png')}
+${createCategory('Verbes', verbes, 'https://img.icons8.com/ios/50/000000/actions.png')}
+${createCategory('Adjectifs', adjectifs, 'https://img.icons8.com/ios/50/000000/heart.png')}
+${createCategory('Déterminants', déterminants, 'https://img.icons8.com/ios/50/000000/grammar-check.png')}
+${createCategory('Pronoms', pronoms, 'https://img.icons8.com/ios/50/000000/identity-theft.png')}
+      `;
+
+      log.innerHTML = analyse;
+    }
+
+    // Écouteur d'événements pour mettre à jour l'analyse en temps réel
+    document.getElementById("userInput").addEventListener("input", process);
+  </script>
+</body>
+</html>
